@@ -2,62 +2,74 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Jeno's iPhone - Jaemjen Simulator</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; user-select: none; }
-    body { background: #0b0c0e; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #fff; overflow: hidden; }
-
-    /* Frame iPhone 16 Pro */
-    .iphone-container {
-      width: 380px;
-      height: 780px;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       background: #000;
-      border-radius: 50px;
-      border: 10px solid #2a2b2e;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.8), inset 0 0 4px rgba(255,255,255,0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    /* Frame iPhone Responsive biar pas di layar HP tanpa terpotong bar browser */
+    .iphone-container {
+      width: min(380px, 94vw);
+      height: min(780px, 86dvh);
+      background: #000;
+      border-radius: 44px;
+      border: 8px solid #2d2e32;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 3px rgba(255,255,255,0.2);
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     /* Dynamic Island */
     .dynamic-island {
       position: absolute;
-      top: 10px;
+      top: 8px;
       left: 50%;
       transform: translateX(-50%);
-      width: 110px;
-      height: 28px;
+      width: 105px;
+      height: 26px;
       background: #000;
       border-radius: 20px;
       z-index: 999;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 12px;
+      padding: 0 10px;
       transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
-    .dynamic-island.active { width: 340px; height: 60px; border-radius: 30px; background: rgba(20,20,20,0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); }
-    .island-content { display: none; width: 100%; align-items: center; justify-content: space-between; font-size: 12px; }
+    .dynamic-island.active { width: 90%; height: 55px; border-radius: 28px; background: rgba(20,20,20,0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); }
+    .island-content { display: none; width: 100%; align-items: center; justify-content: space-between; font-size: 11px; }
     .dynamic-island.active .island-content { display: flex; }
 
     /* Status Bar */
     .status-bar {
       position: absolute;
-      top: 14px;
+      top: 10px;
       width: 100%;
-      padding: 0 26px;
+      padding: 0 22px;
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       z-index: 998;
       pointer-events: none;
     }
 
-    /* Screen System */
+    /* System Screen */
     .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; overflow: hidden; }
     .screen.active { display: flex; }
 
@@ -65,139 +77,191 @@
     #lock-screen {
       background: linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.4)), url('LOCKSCREEN.jpeg') center/cover no-repeat;
       justify-content: space-between;
-      padding: 60px 20px 40px;
+      padding: 50px 18px 30px;
       text-align: center;
       cursor: pointer;
     }
-    .clock-large { font-size: 68px; font-weight: 200; letter-spacing: -1.5px; }
-    .date-text { font-size: 16px; font-weight: 500; opacity: 0.9; }
+    .clock-large { font-size: 60px; font-weight: 200; letter-spacing: -1.5px; margin-top: 5px; }
+    .date-text { font-size: 15px; font-weight: 500; opacity: 0.9; }
 
     .lock-noti {
       background: rgba(255,255,255,0.22);
       backdrop-filter: blur(20px);
       border-radius: 16px;
-      padding: 12px 16px;
+      padding: 10px 14px;
       text-align: left;
-      margin-top: 20px;
-      font-size: 13px;
+      margin-top: 15px;
+      font-size: 12px;
       border: 1px solid rgba(255,255,255,0.2);
     }
 
-    /* Homescreen */
+    /* Homescreen Layout Persis iOS */
     #home-screen {
       background: url('homescreen.jpeg') center/cover no-repeat;
-      padding: 65px 20px 35px;
+      padding: 42px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: auto; }
-    .app-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+
+    /* iOS Widgets Row */
+    .widgets-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .widget-box {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(25px);
+      border-radius: 20px;
+      padding: 12px;
+      height: 125px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(255,255,255,0.25);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    /* App Grid */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px 10px;
+      margin-top: 12px;
+    }
+    .app-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
     .app-icon {
-      width: 58px; height: 58px; border-radius: 15px; display: flex; align-items: center; justify-content: center;
-      font-size: 26px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #222; transition: transform 0.15s;
+      width: 52px; height: 52px; border-radius: 13px; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; box-shadow: 0 3px 10px rgba(0,0,0,0.25); background: #222; transition: transform 0.12s;
     }
-    .app-item:active .app-icon { transform: scale(0.92); }
-    .app-label { font-size: 11px; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+    .app-item:active .app-icon { transform: scale(0.9); }
+    .app-label { font-size: 10px; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.9); letter-spacing: -0.2px; }
+
+    /* Search Bar Pill */
+    .search-pill {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 500;
+      align-self: center;
+      margin: 10px 0 6px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Bottom Dock iOS */
+    .bottom-dock {
+      background: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(30px);
+      border-radius: 26px;
+      padding: 8px 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
 
     /* KakaoTalk UI */
     .kakaotalk-bg { background: #abc0d0; color: #000; }
-    .chat-header { background: #a0b4c4; padding: 42px 16px 12px; display: flex; align-items: center; gap: 12px; font-weight: 600; }
-    .chat-body { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px; background: url('wallpaper WA.jpeg') center/cover no-repeat; }
-    .msg { max-width: 75%; padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; word-wrap: break-word; animation: fadeIn 0.25s ease; }
+    .chat-header { background: #a0b4c4; padding: 36px 14px 10px; display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 13px; }
+    .chat-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: url('wallpaper WA.jpeg') center/cover no-repeat; }
+    .msg { max-width: 78%; padding: 8px 12px; border-radius: 12px; font-size: 12.5px; line-height: 1.35; word-wrap: break-word; }
     .msg.received { background: #fff; align-self: flex-start; border-top-left-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .msg.sent { background: #ffe812; align-self: flex-end; border-top-right-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-    .typing-indicator { font-size: 11px; color: #555; font-style: italic; align-self: flex-start; background: rgba(255,255,255,0.7); padding: 4px 8px; border-radius: 8px; }
+    .typing-indicator { font-size: 10px; color: #444; font-style: italic; align-self: flex-start; background: rgba(255,255,255,0.8); padding: 3px 8px; border-radius: 6px; }
 
-    .chat-input-bar { background: #fff; padding: 10px 12px 24px; display: flex; gap: 8px; align-items: center; }
-    .chat-input-bar input { flex: 1; border: 1px solid #ddd; border-radius: 18px; padding: 8px 14px; outline: none; font-size: 13px; }
-    .send-btn { border: none; background: #ffe812; padding: 8px 14px; border-radius: 16px; cursor: pointer; font-weight: bold; font-size: 12px; color: #3c1e1e; }
+    .chat-input-bar { background: #fff; padding: 8px 10px 14px; display: flex; gap: 6px; align-items: center; border-top: 1px solid #eee; }
+    .chat-input-bar input { flex: 1; border: 1px solid #ddd; border-radius: 16px; padding: 7px 12px; outline: none; font-size: 12px; }
+    .send-btn { border: none; background: #ffe812; padding: 7px 12px; border-radius: 14px; cursor: pointer; font-weight: bold; font-size: 11px; color: #3c1e1e; }
 
     /* Chat List */
-    .chat-list-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee; cursor: pointer; }
-    .avatar-circle { width: 46px; height: 46px; border-radius: 18px; object-fit: cover; }
+    .chat-list-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #fff; border-bottom: 1px solid #eee; cursor: pointer; }
+    .avatar-circle { width: 42px; height: 42px; border-radius: 16px; object-fit: cover; }
 
     /* Instagram UI */
-    .insta-header { background: #000; border-bottom: 1px solid #222; padding: 42px 16px 10px; display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; }
-    .insta-profile { padding: 16px; display: flex; gap: 20px; align-items: center; }
-    .insta-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #333; }
-    .insta-stats { display: flex; gap: 20px; text-align: center; flex: 1; }
-    .insta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: #111; margin-top: 10px; overflow-y: auto; flex: 1; }
-    .insta-grid img { width: 100%; height: 115px; object-fit: cover; }
+    .insta-header { background: #000; border-bottom: 1px solid #222; padding: 36px 14px 8px; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; }
+    .insta-profile { padding: 12px; display: flex; gap: 16px; align-items: center; }
+    .insta-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #333; }
+    .insta-stats { display: flex; gap: 14px; text-align: center; flex: 1; font-size: 12px; }
+    .insta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: #111; margin-top: 8px; overflow-y: auto; flex: 1; }
+    .insta-grid img { width: 100%; height: 95px; object-fit: cover; }
 
     /* Phone Call UI */
     #phone-call-screen {
       background: linear-gradient(180deg, #1c1c1e 0%, #000 100%);
-      padding: 55px 20px 30px;
+      padding: 45px 16px 20px;
       display: none;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
     }
-    .caller-avatar { width: 95px; height: 95px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); margin-bottom: 8px; }
+    .caller-avatar { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); margin-bottom: 6px; }
     .caller-avatar.pulse { animation: ringPulse 1.2s infinite ease-in-out; }
-    .caller-name { font-size: 22px; font-weight: 600; }
-    .call-status { font-size: 13px; color: #8e8e93; margin-top: 4px; }
+    .caller-name { font-size: 20px; font-weight: 600; }
+    .call-status { font-size: 12px; color: #8e8e93; margin-top: 2px; }
     
     .dialog-box {
       background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(20px);
-      border-radius: 18px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 14px;
       width: 100%;
       text-align: center;
-      font-size: 13.5px;
-      line-height: 1.5;
+      font-size: 12.5px;
+      line-height: 1.45;
       border: 1px solid rgba(255,255,255,0.15);
-      margin: 10px 0;
-      min-height: 85px;
+      margin: 8px 0;
+      min-height: 75px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .choice-container { width: 100%; display: flex; flex-direction: column; gap: 8px; min-height: 100px; }
+    .choice-container { width: 100%; display: flex; flex-direction: column; gap: 6px; }
     .choice-btn {
       background: rgba(255,255,255,0.15);
       color: #fff;
       border: 1px solid rgba(255,255,255,0.2);
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 12.5px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 11.5px;
       cursor: pointer;
       text-align: left;
-      transition: all 0.2s;
     }
-    .choice-btn:active { background: rgba(255,255,255,0.35); }
 
-    .call-controls { display: flex; gap: 50px; margin-bottom: 10px; }
+    .call-controls { display: flex; gap: 40px; margin-bottom: 6px; }
     .call-action {
-      width: 62px; height: 62px; border-radius: 50%; border: none;
-      color: #fff; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      width: 56px; height: 56px; border-radius: 50%; border: none;
+      color: #fff; font-weight: bold; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
     .decline { background: #ff3b30; }
     .accept { background: #34c759; }
 
-    /* App Header Standard */
-    .app-header { padding: 42px 16px 12px; background: #1c1c1e; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #2c2c2e; font-weight: 600; }
+    /* Standard Header */
+    .app-header { padding: 36px 14px 10px; background: #1c1c1e; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #2c2c2e; font-weight: 600; font-size: 13px; }
     
-    /* Gallery */
-    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 4px; overflow-y: auto; flex: 1; }
-    .gallery-grid img { width: 100%; height: 110px; object-fit: cover; }
+    /* Gallery Grid */
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; overflow-y: auto; flex: 1; }
+    .gallery-grid img { width: 100%; height: 95px; object-fit: cover; }
 
     /* Home Indicator */
     .home-indicator {
       position: absolute;
-      bottom: 8px;
+      bottom: 5px;
       left: 50%;
       transform: translateX(-50%);
-      width: 130px;
+      width: 110px;
       height: 4px;
-      background: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.7);
       border-radius: 2px;
       z-index: 1000;
       cursor: pointer;
     }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes ringPulse { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
+    @keyframes ringPulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
   </style>
 </head>
 <body>
@@ -207,7 +271,7 @@
   <div class="dynamic-island" id="dynamicIsland">
     <div class="island-content" id="islandContent">
       <span style="display:flex; align-items:center; gap:6px;">
-        <span style="color:#ff3b30; animation: pulse 1s infinite;">📞</span> <b>Kak Jaemin</b>
+        <span style="color:#ff3b30;">📞</span> <b>Kak Jaemin</b>
       </span>
       <span style="font-size:10px; opacity:0.8;">Memanggil...</span>
     </div>
@@ -229,12 +293,48 @@
         <p style="opacity:0.9; margin-top:2px;">Revisi bab 3 kamu mana? Katanya mau dikirim jam 9?</p>
       </div>
     </div>
-    <div style="font-size: 12px; opacity: 0.8; margin-bottom: 10px;">Ketuk layar untuk membuka</div>
+    <div style="font-size: 11px; opacity: 0.8; margin-bottom: 6px;">Ketuk layar untuk membuka</div>
   </div>
 
-  <!-- Homescreen -->
+  <!-- Homescreen Layout Persis iOS -->
   <div class="screen" id="home-screen">
+    <!-- Widgets Row -->
+    <div class="widgets-row">
+      <!-- Weather Widget -->
+      <div class="widget-box" style="background: linear-gradient(135deg, #2980b9, #6dd5fa);">
+        <div style="font-size: 11px; font-weight: 600;">Seoul</div>
+        <div style="font-size: 28px; font-weight: 300;">18°</div>
+        <div style="font-size: 10px; opacity: 0.9;">⛅ Cerah Berawan<br>H:22° L:14°</div>
+      </div>
+      <!-- Calendar Widget -->
+      <div class="widget-box" style="background: #fff; color: #000;">
+        <div style="color: #ff3b30; font-size: 10px; font-weight: bold; text-transform: uppercase;">RABU</div>
+        <div style="font-size: 32px; font-weight: 300; line-height: 1;">21</div>
+        <div style="font-size: 10px; color: #555;">
+          <span style="color:#ff3b30;">●</span> 13:00 Asistensi Lab<br>
+          <span style="color:#34c759;">●</span> 19:00 Makan Bareng
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App Grid -->
     <div class="app-grid">
+      <div class="app-item" onclick="triggerIncomingCall()">
+        <div class="app-icon" style="background: #34c759;">📞</div>
+        <div class="app-label">Telepon</div>
+      </div>
+      <div class="app-item" onclick="openScreen('calendar-screen')">
+        <div class="app-icon" style="background: #ff3b30;">📅</div>
+        <div class="app-label">Kalender</div>
+      </div>
+      <div class="app-item" onclick="openScreen('gallery-screen')">
+        <div class="app-icon" style="background: #fff;">🖼️</div>
+        <div class="app-label">Foto</div>
+      </div>
+      <div class="app-item" onclick="openScreen('email-screen')">
+        <div class="app-icon" style="background: #007aff;">✉️</div>
+        <div class="app-label">Mail</div>
+      </div>
       <div class="app-item" onclick="openScreen('kakaotalk-list-screen')">
         <div class="app-icon" style="background: #ffe812; color: #3c1e1e;">💬</div>
         <div class="app-label">KakaoTalk</div>
@@ -243,25 +343,32 @@
         <div class="app-icon" style="background: linear-gradient(45deg, #f09433, #bc1888);">📸</div>
         <div class="app-label">Instagram</div>
       </div>
-      <div class="app-item" onclick="triggerIncomingCall()">
-        <div class="app-icon" style="background: #34c759;">📞</div>
-        <div class="app-label">Telepon</div>
-      </div>
-      <div class="app-item" onclick="openScreen('gallery-screen')">
-        <div class="app-icon" style="background: #fff;">🖼️</div>
-        <div class="app-label">Galeri</div>
-      </div>
-      <div class="app-item" onclick="openScreen('email-screen')">
-        <div class="app-icon" style="background: #007aff;">✉️</div>
-        <div class="app-label">Email</div>
-      </div>
-      <div class="app-item" onclick="openScreen('calendar-screen')">
-        <div class="app-icon" style="background: #ff3b30;">📅</div>
-        <div class="app-label">Kalender</div>
-      </div>
       <div class="app-item" onclick="openScreen('maps-screen')">
         <div class="app-icon" style="background: #30d158;">🗺️</div>
-        <div class="app-label">Maps</div>
+        <div class="app-label">Peta</div>
+      </div>
+      <div class="app-item" onclick="alert('Pengaturan iPhone Jeno')">
+        <div class="app-icon" style="background: #8e8e93;">⚙️</div>
+        <div class="app-label">Settings</div>
+      </div>
+    </div>
+
+    <!-- Search Bar Pill -->
+    <div class="search-pill">🔍 Search</div>
+
+    <!-- Bottom Dock -->
+    <div class="bottom-dock">
+      <div class="app-item" onclick="triggerIncomingCall()">
+        <div class="app-icon" style="background: #34c759;">📞</div>
+      </div>
+      <div class="app-item" onclick="openScreen('maps-screen')">
+        <div class="app-icon" style="background: #007aff;">🧭</div>
+      </div>
+      <div class="app-item" onclick="openScreen('kakaotalk-list-screen')">
+        <div class="app-icon" style="background: #ffe812; color: #3c1e1e;">💬</div>
+      </div>
+      <div class="app-item" onclick="openScreen('instagram-screen')">
+        <div class="app-icon" style="background: linear-gradient(45deg, #f09433, #bc1888);">📸</div>
       </div>
     </div>
   </div>
@@ -277,33 +384,33 @@
         <img src="Jaemin NCT.jpeg" class="avatar-circle">
         <div>
           <b>Kak Jaemin (Kating)</b>
-          <p style="font-size:12px; color:#666;">Jeno, revisi bab 3 kamu mana?</p>
+          <p style="font-size:11px; color:#666;">Jeno, revisi bab 3 kamu mana?</p>
         </div>
       </div>
       <div class="chat-list-item" onclick="openChat('friends')">
         <img src="renjun.jpeg" class="avatar-circle">
         <div>
           <b>Renjun & Haechan</b>
-          <p style="font-size:12px; color:#666;">Haechan: Woi Jen, kating galak nyariin tuh...</p>
+          <p style="font-size:11px; color:#666;">Haechan: Woi Jen, kating galak nyariin...</p>
         </div>
       </div>
       <div class="chat-list-item" onclick="openChat('mark')">
         <img src="mark.jpeg" class="avatar-circle">
         <div>
           <b>Bang Mark</b>
-          <p style="font-size:12px; color:#666;">Jangan lupa pulang sebelum jam 10 malam ya.</p>
+          <p style="font-size:11px; color:#666;">Jangan lupa pulang sebelum jam 10 malam.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- KakaoTalk Individual Chat Screen -->
+  <!-- KakaoTalk Chat Screen -->
   <div class="screen kakaotalk-bg" id="kakaotalk-chat-screen">
     <div class="chat-header">
       <span onclick="openScreen('kakaotalk-list-screen')" style="cursor:pointer;">❮</span>
       <div>
         <div id="chatTitle">Kak Jaemin</div>
-        <div style="font-size: 10px; opacity: 0.7; font-weight: normal;" id="chatSub">Arsitektur '24</div>
+        <div style="font-size: 9.5px; opacity: 0.7; font-weight: normal;" id="chatSub">Arsitektur '24</div>
       </div>
     </div>
     <div class="chat-body" id="chatBody"></div>
@@ -323,12 +430,12 @@
     <div class="insta-profile">
       <img src="jeno photo profil WA.jpeg" class="insta-avatar">
       <div class="insta-stats">
-        <div><b>6</b><br><span style="font-size:11px; color:#aaa;">Posts</span></div>
-        <div><b>423K</b><br><span style="font-size:11px; color:#aaa;">Followers</span></div>
-        <div><b>120</b><br><span style="font-size:11px; color:#aaa;">Following</span></div>
+        <div><b>6</b><br><span style="font-size:10px; color:#aaa;">Posts</span></div>
+        <div><b>423K</b><br><span style="font-size:10px; color:#aaa;">Followers</span></div>
+        <div><b>120</b><br><span style="font-size:10px; color:#aaa;">Following</span></div>
       </div>
     </div>
-    <div style="padding:0 16px 12px; font-size:13px;">
+    <div style="padding:0 14px 8px; font-size:12px;">
       <b>Jeno Lee</b><br>
       Architecture Student '25 📐
     </div>
@@ -386,14 +493,14 @@
       <span onclick="openScreen('home-screen')" style="cursor:pointer;">❮</span>
       <span>Email Kampus</span>
     </div>
-    <div style="padding:16px; font-size:13px; display:flex; flex-direction:column; gap:12px;">
-      <div style="background:#2c2c2e; padding:12px; border-radius:12px;">
+    <div style="padding:14px; font-size:12px; display:flex; flex-direction:column; gap:10px;">
+      <div style="background:#2c2c2e; padding:10px; border-radius:10px;">
         <b>Revisi Laporan - Na Jaemin (Kating)</b>
-        <p style="color:#aaa; font-size:11px; margin-top:4px;">Jeno, perbaiki denah struktur lantai 2 di CAD kamu...</p>
+        <p style="color:#aaa; font-size:10px; margin-top:3px;">Jeno, perbaiki denah struktur lantai 2 di CAD kamu...</p>
       </div>
-      <div style="background:#2c2c2e; padding:12px; border-radius:12px;">
+      <div style="background:#2c2c2e; padding:10px; border-radius:10px;">
         <b>Pengumuman Lab Arsitektur</b>
-        <p style="color:#aaa; font-size:11px; margin-top:4px;">Jadwal asistensi kelompok 4 dimajukan besok pagi.</p>
+        <p style="color:#aaa; font-size:10px; margin-top:3px;">Jadwal asistensi kelompok 4 dimajukan besok pagi.</p>
       </div>
     </div>
   </div>
@@ -404,14 +511,14 @@
       <span onclick="openScreen('home-screen')" style="cursor:pointer;">❮</span>
       <span>Jadwal & Skejul Jeno</span>
     </div>
-    <div style="padding:16px; font-size:13px; display:flex; flex-direction:column; gap:12px;">
-      <div style="background:#2c2c2e; padding:12px; border-radius:12px; border-left:4px solid #34c759;">
+    <div style="padding:14px; font-size:12px; display:flex; flex-direction:column; gap:10px;">
+      <div style="background:#2c2c2e; padding:10px; border-radius:10px; border-left:3px solid #34c759;">
         <b>09:00 - Kuliah Studio Arsitektur</b>
-        <p style="color:#aaa; font-size:11px;">Gedung Utama R.302</p>
+        <p style="color:#aaa; font-size:10px;">Gedung Utama R.302</p>
       </div>
-      <div style="background:#2c2c2e; padding:12px; border-radius:12px; border-left:4px solid #ff9500;">
+      <div style="background:#2c2c2e; padding:10px; border-radius:10px; border-left:3px solid #ff9500;">
         <b>13:00 - Asistensi Laporan bareng Kak Jaemin</b>
-        <p style="color:#aaa; font-size:11px;">Lab Gambar Lantai 2</p>
+        <p style="color:#aaa; font-size:10px;">Lab Gambar Lantai 2</p>
       </div>
     </div>
   </div>
@@ -422,7 +529,7 @@
       <span onclick="openScreen('home-screen')" style="cursor:pointer;">❮</span>
       <span>Peta Kampus</span>
     </div>
-    <div style="padding:20px; text-align:center; color:#aaa; font-size:13px;">
+    <div style="padding:18px; text-align:center; color:#aaa; font-size:12px;">
       📍 <b>Lokasi Saat Ini:</b> Fakultas Teknik Arsitektur<br><br>
       • Lab Gambar (Tempat Kak Jaemin)<br>
       • Kantin Utama (Spot Haechan & Renjun)<br>
@@ -453,12 +560,12 @@
       const gain = audioCtx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.12);
-      gain.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.25);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime + idx * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.22);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start(audioCtx.currentTime + idx * 0.12);
-      osc.stop(audioCtx.currentTime + idx * 0.12 + 0.25);
+      osc.stop(audioCtx.currentTime + idx * 0.12 + 0.22);
     });
   }
 
@@ -481,12 +588,12 @@
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.05);
+    osc.stop(audioCtx.currentTime + 0.04);
   }
 
   const chatData = {
@@ -614,7 +721,7 @@
         typeWriterEffect(replyDiv, replyText, 30, () => {
           body.scrollTop = body.scrollHeight;
         });
-      }, 1500);
+      }, 1400);
     }
   }
 
